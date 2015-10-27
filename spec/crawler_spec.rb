@@ -46,6 +46,7 @@ describe Scraper::Crawler do
 
   describe "#crawl" do
     # TODO: IMPROVE ME
+    let(:link_regex) {  }
     it "should crawl domain" do
 
       link_regex = /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/
@@ -66,9 +67,6 @@ describe Scraper::Crawler do
         end
       end
 
-
-      #exbpect(Scraper::LinkContentParser).to receive(:new).with('http://hotline.bling', link_regex) do
-
       expected_data = {
         uri: domain,
         pages: fake_link_parser_1.map { |uri| {uri: uri, pages: []} }
@@ -76,33 +74,18 @@ describe Scraper::Crawler do
 
       expect(crawler.crawl(domain, {})).to eq(expected_data)
     end
-  end
 
+    it "return data passed if the pages is nil" do
+      data = {uri: domain, pages: []}
 
+      allow_any_instance_of(Scraper::LinkContentParser).to receive(:get_all_links).and_return(nil)
 
-
-  describe "errors" do
-
-  end
-  describe "it displays links" do
-
-
-    it "should return array" do
-     ######## scraper = Scraper::Crawler.new('http://digitalocean.com')
-
-      #x = scraper.do_crawl
-      #x = scraper.get_all_links('http://digitalocean.com')
-      #expect(x).to be_instance_of(Array)
+      expect(crawler.crawl(domain, data)).to be(data)
     end
 
-    it "should do things" do
-      scraper = Scraper::Crawler.new('http://digitalocean.com')
-
-      #x = scraper.do_crawl
-#      x = scraper.do_crawl
-#      expect(x).to eq('hey')
+    it "#dacrw" do
+      expect(crawler.do_crawl).to eq({})
     end
   end
 end
-
 

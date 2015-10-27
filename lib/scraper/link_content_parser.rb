@@ -28,10 +28,12 @@ module Scraper
 
         record_link(link_uri)
         links << link_uri
-
-        ## extends to massage data
       end
       links
+    end
+
+    def get_all_assets
+      @page.images_with(:mime_type => /gif|jpeg|png/).map(&:to_s)
     end
 
     protected

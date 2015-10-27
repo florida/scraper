@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'byebug'
 describe Scraper::LinkContentParser do
   let(:domain) { 'http://digitalocean.com' }
   let(:link_regex) { /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/ }
@@ -79,10 +78,6 @@ describe Scraper::LinkContentParser do
           expect(page).to be_nil
         end
       end
-    end
-
-    describe "#domain_is_valid?" do
-
     end
   end
 end
