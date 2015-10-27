@@ -1,9 +1,18 @@
 require 'thor'
+require 'scraper/crawler'
 
 module Scraper
   class CLI < Thor
-   # def scrape(url)
+    option :domain
+    option :ignore_list
 
-   # end
+    desc "url", "scrape url"
+    def scrape
+      crawler = Scraper::Crawler.new(options[:domain])
+      crawler.do_crawl
+      puts "scraping #{options[:domain]}"
+    end
   end
 end
+
+
