@@ -1,29 +1,29 @@
-require 'scraper/helpers/link'
 require 'json'
 require 'scraper/link_content_parser'
 
 module Scraper
   class Crawler
+    include Scraper::Logging
     attr_accessor :domain, :link_regex
-    # should be passed in as an options parameter
+
     LINK_REGEX = /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/
 
-    def initialize(domain, link_regex = nil)
+    def initialize(domain, options)
       @domain = domain
-      @link_regex = link_regex || LINK_REGEX
+      @link_regex = options[:link_regex] || LINK_REGEX
+      # validate file
+      @output_file = options[:output_file] || 'sites.json'
     end
 
     def do_crawl
       pages = crawl(@domain, {})
-      File.open("sites.json", 'w') do |f|
+      File.open(@output_file, 'w') do |f|
         f.write pages.to_json
       end
     end
 
     def crawl(domain, data = {})
       return if /community|help|one-click-apps|blog/ =~ domain
-
-      puts "crawling #{domain}"
 
       content = Scraper::LinkContentParser.new(domain, link_regex)
       pages = content.get_all_links
