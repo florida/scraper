@@ -10,8 +10,7 @@ module Scraper
       #  false
       end
 
-      def self.get_url_with_scheme(url)
-        return true if /http/ =~ url
+      def self.add_scheme(url)
         URI.parse(url).scheme.nil? ? "http://#{url}" : url
       end
 
