@@ -45,7 +45,6 @@ describe Scraper::Crawler do
   end
 
   describe "#crawl" do
-    # TODO: IMPROVE ME
     let(:link_regex) {  }
     it "should crawl domain" do
 

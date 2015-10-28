@@ -13,6 +13,14 @@ describe Scraper::LinkContentParser do
       expect(link_content.instance_variable_get(:@page)).to be_a Mechanize::Page
     end
 
+
+    context "domain without schema" do
+      let(:domain) { 'digitalocean.com' }
+      it "should accept links without schemas" do
+        expect(link_content.instance_variable_get(:@domain)).to eq('http://digitalocean.com')
+      end
+    end
+
     context "invalid domain" do
       let(:domain) { 'http://bt' }
 
