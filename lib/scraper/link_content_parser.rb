@@ -1,19 +1,19 @@
 require 'scraper/helpers/link'
+require 'scraper/helpers/logging'
 require 'mechanize'
 require 'set'
 
 module Scraper
   class LinkContentParser
+    include Scraper::Logging
+
     @@agent = nil
     @@links = Set.new
 
-    # have a default link regex (?)
     def initialize(domain, link_regex)
-      @domain = domain
+      @domain = validate_domain(domain)
       @link_regex = link_regex
       @page = get_page
-
-      # return object if link isn't valid
     end
 
     def get_all_links
@@ -25,6 +25,8 @@ module Scraper
         link_uri = Scraper::Helpers::Link.stitch_relative_path(@domain, link.uri.to_s)
         #next if link isn't valid
         next if link_already_exists? link_uri
+
+        logger.info("crawling #{link_uri}")
 
         record_link(link_uri)
         links << link_uri
@@ -48,8 +50,12 @@ module Scraper
     rescue SocketError
     end
 
+    def validate_domain(domain)
+      Scraper::Helpers::Link.add_scheme(domain)
+    end
+
     def domain_is_valid?
-      Scraper::Helpers::Link.link_valid?(@domain.to_s)
+      Scraper::Helpers::Link.link_valid?(@domain)
     end
 
     def link_already_exists?(link)
