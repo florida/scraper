@@ -25,26 +25,23 @@ describe Scraper::LinkContentParser do
       let(:domain) { 'http://bt' }
 
       it "should not set the page" do
-       expect(link_content.instance_variable_get(:@page)).to be_nil
+        expect(link_content.instance_variable_get(:@page)).to be_nil
       end
     end
-
- end
+  end
 
   describe "#get_all_links" do
     let(:fake_pages) {[
-       double(uri: 'http://do.co/mo'),
-       double(uri: 'http://do.co/momo')
+      double(uri: 'http://do.co/mo'),
+      double(uri: 'http://do.co/momo')
     ]}
 
-    before { allow_any_instance_of(Mechanize::Page).to receive(:links_with).and_return(fake_pages) }
+    before { allow_any_instance_of(Mechanize::Page).to receive(:links_with).with(anything()).and_return(fake_pages) }
 
     it "should get all the links in the domain" do
       links = link_content.get_all_links
       expect(links).to eq(['http://do.co/mo', 'http://do.co/momo'])
     end
-
-    # TODO: Make sure that it returns empty arrays
 
     it "should skip link if it already exists" do
       links = link_content.get_all_links
@@ -59,32 +56,30 @@ describe Scraper::LinkContentParser do
         expect(links).to be_nil
       end
     end
-
-    # eeh
-    describe "protected" do
-      describe "#get_page" do
-        it "should get the page" do
-          page = link_content.send(:get_page)
-          expect(page).to be_a Mechanize::Page
-        end
+  end
+  describe "protected" do
+    describe "#get_page" do
+      it "should get the page" do
+        page = link_content.send(:get_page)
+        expect(page).to be_a Mechanize::Page
       end
+    end
 
-      context "page returns 404" do
-        let(:domain) { 'http://digitalocean.com/nolink' }
+    context "page returns 404" do
+      let(:domain) { 'http://digitalocean.com/nolink' }
 
-        it "should return nil" do
-          page = link_content.send(:get_page)
-          expect(page).to be_nil
-        end
+      it "should return nil" do
+        page = link_content.send(:get_page)
+        expect(page).to be_nil
       end
+    end
 
-      context "page is not valid" do
-        let(:domain) { 'nope' }
+    context "page is not valid" do
+      let(:domain) { 'nope' }
 
-        it "should return nil" do
-          page = link_content.send(:get_page)
-          expect(page).to be_nil
-        end
+      it "should return nil" do
+        page = link_content.send(:get_page)
+        expect(page).to be_nil
       end
     end
   end

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'byebug'
 
 describe Scraper::Crawler do
   let(:domain) { 'http://digitalocean.com' }
@@ -33,22 +34,22 @@ describe Scraper::Crawler do
   describe "#crawl" do
     let(:link_regex) {  }
     it "should crawl domain" do
-      link_regex = /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/
-
-      fake_link_parser_1 = [
+      fake_links = [
         'http://hotline.bling',
         'http://hotline.blingy'
       ]
-      fake_links = double(get_all_links: fake_link_parser_1)
-      empty_links = double(get_all_links: [])
+      fake_link_parser = double(get_all_links: fake_links, get_all_assets: ['fake_assets'])
+      fake_empty_parser = double(get_all_links: [], get_all_assets: [])
 
-      expect(Scraper::LinkContentParser).to receive(:new).at_least(:once).with(anything(), link_regex) do |dom|
-        fake_link_parser_1.include? dom ? empty_links : fake_links
+
+      expect(Scraper::LinkContentParser).to receive(:new).at_least(:once).with(anything()) do |dom|
+        (fake_links.include? dom) ? fake_empty_parser : fake_link_parser
       end
 
       expected_data = {
         uri: domain,
-        pages: fake_link_parser_1.map { |uri| {uri: uri, pages: []} }
+        pages: fake_links.map { |uri| {uri: uri, pages: [], assets: []} },
+        assets: ['fake_assets']
       }
 
       expect(crawler.crawl(domain, {})).to eq(expected_data)
@@ -60,10 +61,6 @@ describe Scraper::Crawler do
       allow_any_instance_of(Scraper::LinkContentParser).to receive(:get_all_links).and_return(nil)
 
       expect(crawler.crawl(domain, data)).to be(data)
-    end
-
-    it "#dacrw" do
-      expect(crawler.do_crawl).to eq({})
     end
   end
 end
