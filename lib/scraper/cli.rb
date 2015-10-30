@@ -14,8 +14,10 @@ module Scraper
 
     def scrape(domain)
       crawler = Scraper::Crawler.new(domain, options)
-      crawler.do_crawl
+
       logger.info(set_color "scraping #{domain}", :yellow)
+
+      crawler.do_crawl
     rescue SocketError
       logger.error(set_color "Internet connection not found, please check internet connection or try again later.", :red)
     end
