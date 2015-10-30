@@ -4,14 +4,13 @@ require 'scraper/link_content_parser'
 module Scraper
   class Crawler
     include Scraper::Logging
-    attr_accessor :domain, :link_regex
+    attr_accessor :domain
 
-    LINK_REGEX = /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/
+    IGNORE_LIST = /community|blog/
 
-    def initialize(domain, options)
+    def initialize(domain, options = {})
       @domain = domain
-      @link_regex = options[:link_regex] || LINK_REGEX
-      # validate file
+      @ignore_list = options[:ignore_list] || IGNORE_LIST
       @output_file = options[:output_file] || 'sites.json'
     end
 
@@ -25,7 +24,7 @@ module Scraper
     def crawl(domain, data = {})
       return if /community|help|one-click-apps|blog/ =~ domain
 
-      content = Scraper::LinkContentParser.new(domain, link_regex)
+      content = Scraper::LinkContentParser.new(domain)
       pages = content.get_all_links
       assets = content.get_all_assets
 

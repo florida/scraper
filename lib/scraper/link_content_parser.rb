@@ -7,12 +7,14 @@ module Scraper
   class LinkContentParser
     include Scraper::Logging
 
+    LINK_REGEX = /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/
+
     @@agent = nil
     @@links = Set.new
 
-    def initialize(domain, link_regex)
+    def initialize(domain, link_regex = {})
       @domain = validate_domain(domain)
-      @link_regex = link_regex
+      @link_regex = link_regex || LINK_REGEX
       @page = get_page
     end
 
@@ -21,9 +23,10 @@ module Scraper
       record_link(@page.uri.to_s)
 
       links = []
-      @page.links_with(href: @link_regex).each do |link|
+      @page.links_with(href: LINK_REGEX).each do |link|
         link_uri = Scraper::Helpers::Link.stitch_relative_path(@domain, link.uri.to_s)
-        #next if link isn't valid
+
+        next if !domain_is_valid? link_uri
         next if link_already_exists? link_uri
 
         logger.info("crawling #{link_uri}")
@@ -41,7 +44,7 @@ module Scraper
     protected
 
     def get_page
-      return unless domain_is_valid?
+      return unless domain_is_valid?(@domain)
 
       @@agent ||= Mechanize.new
       @@agent.get(@domain)
@@ -54,8 +57,8 @@ module Scraper
       Scraper::Helpers::Link.add_scheme(domain)
     end
 
-    def domain_is_valid?
-      Scraper::Helpers::Link.link_valid?(@domain)
+    def domain_is_valid?(domain)
+      Scraper::Helpers::Link.link_valid?(domain)
     end
 
     def link_already_exists?(link)
