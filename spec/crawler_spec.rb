@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Scraper::Crawler do
-  # test dont scrape if it's not a link
-  # exceptions
   let(:domain) { 'http://digitalocean.com' }
   let(:crawler) { Scraper::Crawler.new(domain) }
 
@@ -15,18 +13,6 @@ describe Scraper::Crawler do
       link = 'http://digitalocean.com'
       scraper = Scraper::Crawler.new(link)
       expect(scraper.domain).to eq(link)
-    end
-
-    it "should accept links with proper schema" do
-
-    end
-
-    it "should accept links with proper schema" do
-
-    end
-
-    it "should return proper error message when link is not valid" do
-
     end
   end
 
