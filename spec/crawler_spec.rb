@@ -33,23 +33,17 @@ describe Scraper::Crawler do
   describe "#crawl" do
     let(:link_regex) {  }
     it "should crawl domain" do
-
       link_regex = /^([\#\/\!\$\&\-\;\=\?\-\[\]\_\~\.a-z0-9]+)$/
 
       fake_link_parser_1 = [
         'http://hotline.bling',
         'http://hotline.blingy'
       ]
-
-      sm = double(get_all_links: fake_link_parser_1)
-      sma = double(get_all_links: [])
+      fake_links = double(get_all_links: fake_link_parser_1)
+      empty_links = double(get_all_links: [])
 
       expect(Scraper::LinkContentParser).to receive(:new).at_least(:once).with(anything(), link_regex) do |dom|
-        if fake_link_parser_1.include? dom
-          sma
-        else
-          sm
-        end
+        fake_link_parser_1.include? dom ? empty_links : fake_links
       end
 
       expected_data = {
