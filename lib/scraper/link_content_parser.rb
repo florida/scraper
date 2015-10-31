@@ -38,10 +38,29 @@ module Scraper
     end
 
     def get_all_assets
-      @page.images_with(:mime_type => /gif|jpeg|png/).map(&:to_s)
+      get_images.concat(get_videos.concat(get_js).concat(get_css))
     end
 
     protected
+
+    def get_images
+      @page.images_with(:mime_type => /gif|jpeg|png|bmp/).map(&:to_s)
+    end
+
+    def get_videos
+      video_sources = @page.search('//source[@src]')
+      video_sources.map {|vs| vs.attributes["src"].value }
+    end
+
+    def get_js
+      scripts = @page.search('//script[@src]')
+      scripts.map {|s| s.attributes["src"].value }
+    end
+
+    def get_css
+      css = @page.search('//link[@rel="stylesheet"]')
+      css.map {|c| c.attributes["href"].value }
+    end
 
     def get_page
       return unless domain_is_valid?(@domain)
