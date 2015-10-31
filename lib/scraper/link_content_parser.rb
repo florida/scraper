@@ -58,7 +58,7 @@ module Scraper
     end
 
     def get_css
-      css = @page.search('//link[@rel="stylesheet"]')
+      css = @page.search('//link[@rel="stylesheet" and @href]')
       css.map {|c| c.attributes["href"].value }
     end
 
