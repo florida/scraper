@@ -57,6 +57,19 @@ describe Scraper::LinkContentParser do
       end
     end
   end
+
+  describe "#get_all_assets" do
+    it "should concatenate the assets" do
+      fake_search_result_value = double(value: 'meowcats')
+      fake_search_results = [ double(attributes: { 'src' => fake_search_result_value, 'href' => fake_search_result_value }) ]
+      fake_images = ['meow.jpg']
+      allow_any_instance_of(Mechanize::Page).to receive(:search).and_return(fake_search_results)
+      allow_any_instance_of(Mechanize::Page).to receive(:images_with).and_return(fake_images)
+
+      expect(link_content.get_all_assets).to eq(["meow.jpg", "meowcats", "meowcats", "meowcats"])
+    end
+  end
+
   describe "protected" do
     describe "#get_page" do
       it "should get the page" do
