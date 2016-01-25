@@ -18,8 +18,8 @@ describe Scraper::Crawler do
   end
 
   describe "#do_crawl" do
+    let(:fake_json) { {'uri' => 'http://do.co'} }
     it "call crawl and write to the json file" do
-      fake_json = {'uri' => 'http://do.co'}
       allow_any_instance_of(Scraper::Crawler).to receive(:crawl).and_return(fake_json)
       crawler.do_crawl
       file_content = read_file("#{Dir.pwd}/sites.json")
@@ -27,7 +27,10 @@ describe Scraper::Crawler do
     end
 
     it "should give out proper error when it cannot write to a file" do
-
+      allow(crawler).to receive(:crawl).and_return(fake_json)
+      allow(File).to receive(:open).and_raise(Errno::EACCES, 'File not found')
+      expect_any_instance_of(Scraper::Crawler).to receive(:error).with(/File not found/)
+      crawler.do_crawl
     end
   end
 
